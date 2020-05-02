@@ -1,0 +1,10 @@
+LAMMPS (7 Aug 2019)
+processors         * 1 1 # manually assign processors to spatial regions
+atom_style         meso
+dimension          2
+newton             on
+boundary           f f p
+units              lj
+read_data          data.initial
+ERROR on proc 0: Cannot open file data.initial (../read_data.cpp:2029)
+Last command: read_data          data.initial
