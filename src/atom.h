@@ -163,6 +163,11 @@ class Atom : protected Pointers {
 // adding flags for execution 
   int viscosity_flag;
   int temperature_switch;
+  
+//which particles are boundary particles? for Hughes-Graham correction
+  int * boundaryHG;
+// how many boundary particles are there?
+  int boundaryCount;
 
   //USER-SPIN package
 
@@ -303,6 +308,7 @@ class Atom : protected Pointers {
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
   void set_viscosity(int narg, char **arg);
+  void tait_hg(int narg, char **arg);
 
   // functions for global to local ID mapping
   // map lookup function inlined for efficiency

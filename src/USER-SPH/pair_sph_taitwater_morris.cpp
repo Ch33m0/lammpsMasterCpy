@@ -64,11 +64,21 @@ void PairSPHTaitwaterMorris::compute(int eflag, int vflag) {
   double **f = atom->f;
   double *rho = atom->rho;
   double *mass = atom->mass;
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  double *e = atom->e;
+  double *cv = atom->cv;
+  
   double *de = atom->de;
   double *drho = atom->drho;
   int *type = atom->type;
   int nlocal = atom->nlocal;
   int newton_pair = force->newton_pair;
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+  Viscosity * viscosityCust;
+  if(atom->viscosity_flag)
+    viscosityCust = atom->viscosity;
+  
+  int viscosity_flag= atom->viscosity_flag;
 
   // check consistency of pair coefficients
 
@@ -158,8 +168,40 @@ void PairSPHTaitwaterMorris::compute(int eflag, int vflag) {
         delVdotDelR = delx * velx + dely * vely + delz * velz;
 
         // Morris Viscosity (Morris, 1996)
+        
+        double dynamicViscI, dynamicViscJ;
+        
+        if(viscosity_flag){
+        
+          double T = e[i]/cv[i];  
+          if(viscosityCust->getTypes()==1){
+            if(itype==1)
+              dynamicViscI = viscosityCust->computeViscosity(1, T);
+            else
+              dynamicViscI = viscosity[itype][jtype];
+            if (jtype==1)
+              dynamicViscJ = viscosityCust->computeViscosity(1, T);
+            else
+              dynamicViscJ = viscosity[itype][jtype];
+          }
+          else{
+            int viscTypes = viscosityCust->getTypes();
+            if(itype<=viscTypes)
+              dynamicViscI = viscosityCust->computeViscosity(itype, T);
+            else
+              dynamicViscI = viscosity[itype][jtype];
+            if (jtype<=viscTypes)
+              dynamicViscJ = viscosityCust->computeViscosity(jtype, T);
+            else
+              dynamicViscJ = viscosity[itype][jtype]; 
+          }
+        }
+        else{
+          dynamicViscI=viscosity[itype][jtype];
+          dynamicViscJ=dynamicViscI;
+        }
 
-        fvisc = 2 * viscosity[itype][jtype] / (rho[i] * rho[j]);
+        fvisc = (dynamicViscJ + dynamicViscI) / (rho[i] * rho[j]);
 
         fvisc *= imass * jmass * wfd;
 

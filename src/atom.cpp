@@ -103,6 +103,10 @@ Atom::Atom(LAMMPS *lmp) : Pointers(lmp)
 // initalize viscosity to NULL in order to check it, set a flag
   viscosity = NULL;
   viscosity_flag=0;
+  
+// set boundaryHG particle array to NULL
+  boundaryHG= NULL;
+  boundaryCount=0;
 
   // SPIN package
 
@@ -2417,4 +2421,22 @@ void Atom::set_viscosity(int narg, char **arg) {
     else {
         printf("nothing chosen, %s", arg[0]);
     }
+}
+
+void Atom::tait_hg(int narg, char **arg){
+
+    if (narg<1) error->all(FLERR,"Tait Hughes-Graham input error: too few arguments");
+    
+    this->boundaryHG = new int [narg];
+    int i=0;
+    printf("Boundary particles ");
+    for (i; i<narg; i++){
+      int temp;
+      sscanf(arg[i],"%d",&temp);
+      this->boundaryHG[i] = temp;
+      printf("%d ", temp);
+    }
+    this->boundaryCount= narg;
+    printf("set for Tait Hughes-Graham correction\n");
+
 }

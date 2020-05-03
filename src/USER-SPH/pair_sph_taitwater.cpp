@@ -38,10 +38,7 @@ PairSPHTaitwater::~PairSPHTaitwater() {
   if (allocated) {
     memory->destroy(setflag);
     memory->destroy(cutsq);
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   // if(!atom->viscosity_flag)
-      memory->destroy(viscosity);
-
+    memory->destroy(viscosity);
     memory->destroy(cut);
     memory->destroy(rho0);
     memory->destroy(soundspeed);
@@ -80,6 +77,10 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
   if(atom->viscosity_flag)
     viscosityCust = atom->viscosity;
   
+  int viscosity_flag= atom->viscosity_flag;
+  int temperature_switch= atom->temperature_switch;
+  int * boundaryHG = atom->boundaryHG;
+  int boundaryCount= atom->boundaryCount;
 
   // check consistency of pair coefficients
 
@@ -122,9 +123,33 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
     imass = mass[itype];
 
     // compute pressure of atom i with Tait EOS
-    tmp = rho[i] / rho0[itype];
+    int caseVal;
+    double rhoTempI, rhoTempJ;
+    
+    if (boundaryHG ==NULL)
+      rhoTempI=rho[i];
+    //check for Hughes-Graham correction on boundary particles
+    else{
+      int flag=0;
+      //check to see if i particle is boudary type
+      for(int idx=0; idx<boundaryCount; idx++){
+        // if yes, set flag to do H-G correction
+        if(itype==boundaryHG[idx])
+          flag=1;
+      }
+      if (flag){
+        //check to see if rho value needs H-G correction for this boundary particle
+        if(rho[i]<rho0[itype])
+          rhoTempI=rho0[itype]; 
+      }
+      //otherwise, set it to standard value of rho
+      else
+        rhoTempI= rho[i];
+    }      
+    tmp = rhoTempI / rho0[itype];
     fi = tmp * tmp * tmp;
-    fi = B[itype] * (fi * fi * tmp - 1.0) / (rho[i] * rho[i]);
+    fi = B[itype] * (fi * fi * tmp - 1.0) / (rhoTempI * rhoTempI);
+
 
     for (jj = 0; jj < jnum; jj++) {
       j = jlist[jj];
@@ -158,9 +183,27 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
         }
 
         // compute pressure  of atom j with Tait EOS
-        tmp = rho[j] / rho0[jtype];
+        if (boundaryHG == NULL)
+          rhoTempJ=rho[j];
+        //check for Hughes-Graham correction on boundary particles
+        else{
+          int flag=0;
+          for(int idx=0; idx<boundaryCount; idx++){
+            if(jtype==boundaryHG[idx])
+              flag=1;
+          }
+          if (flag){
+            if(rho[j]<rho0[jtype])
+              rhoTempJ=rho0[jtype]; 
+          }
+          else
+            rhoTempJ= rho[j];
+        } 
+        tmp = rhoTempJ / rho0[jtype];
         fj = tmp * tmp * tmp;
-        fj = B[jtype] * (fj * fj * tmp - 1.0) / (rho[j] * rho[j]);
+        fj = B[jtype] * (fj * fj * tmp - 1.0) / (rhoTempJ * rhoTempJ);
+        
+        //printf("fj= %lf, and fi= %lf\n", fj, fi);
 
         // dot product of velocity delta and distance vector
         delVdotDelR = delx * (vxtmp - v[j][0]) + dely * (vytmp - v[j][1])
@@ -172,42 +215,71 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
           mu = h * delVdotDelR / (rsq + 0.01 * h * h);
           //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
           //if temp-dependent visc is being used
-          if(atom->viscosity_flag){
+          if(viscosity_flag){
             double T;
-            if(atom->temperature_switch==0)
+            if(temperature_switch==0)
               T = ((e[i]-500)/(0.1*4117)+300);
-            else if (atom->temperature_switch==1)
+            else if (temperature_switch==1)
               T = e[i]/cv[i];  
             //	printf("T = %lf, T1 = %lf, and e[i] = %lf, and cv[i] = %lf\n", T, T1, e[i], cv[i]); 
            // if only one fluid type viscosity is being used
+           double aI, aJ;
+           
            if (viscosityCust->getTypes()==1){
-             alpha = viscosityCust->computeViscosity(1, T);
-              //convert dynamic viscosity to kinematic visc
-             alpha = alpha/rho[i];  
-              //convert kinematic viscosity to alpha parameter
-  	         alpha = alpha*8/(h*soundspeed[itype]);
+             //if this particle type is the single custom viscous liquid specified?
+             if(itype==1){
+               aI = viscosityCust->computeViscosity(1, T);
+                //convert dynamic viscosity to kinematic visc
+               aI = aI/rho[i];  
+                //convert kinematic viscosity to alpha parameter
+    	         aI = aI*8/(h*soundspeed[itype]);
+             }
+             else
+               aI= viscosity[itype][jtype];
+             if(jtype==1){
+               aJ = viscosityCust->computeViscosity(1, T);
+                //convert dynamic viscosity to kinematic visc
+               aJ = aJ/rho[j];  
+                //convert kinematic viscosity to alpha parameter
+    	         aJ = aJ*8/(h*soundspeed[jtype]);
+             }
+             else
+               aJ= viscosity[itype][jtype];
            }
            // else, if multiple types of fluid types
            else {
-             realViscI = viscosityCust->computeViscosity(itype, T);
-             realViscJ = viscosityCust->computeViscosity(jtype, T);
-             realViscI = realViscI/rho[i];
-             realViscJ = realViscJ/rho[j];
-             double aI = realViscI*8/(h*soundspeed[itype]);
-             double aJ = realViscJ*8/(h*soundspeed[jtype]);
-             alpha = (aI + aJ)/2;
+             int viscTypes = viscosityCust->getTypes();
+             if(itype<=viscTypes){
+               realViscI = viscosityCust->computeViscosity(itype, T);
+               realViscI = realViscI/rho[i];
+               aI = realViscI*8/(h*soundspeed[itype]);
+             }
+             else
+               aI= viscosity[itype][jtype];
+             if(jtype<=viscTypes){
+               realViscJ = viscosityCust->computeViscosity(jtype, T);
+               realViscJ = realViscJ/rho[j];
+               aJ = realViscJ*8/(h*soundspeed[jtype]);
+             }
+             else
+               aJ= viscosity[itype][jtype];
            }
+           //average of both
+           alpha= (aJ+aI)/2;
          }  
          //else, stock visocisty used
          else{
            alpha=viscosity[itype][jtype];
          }  
-         fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rho[i] + rho[j]);
+         //fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rho[i] + rho[j]);
+         fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rhoTempI + rhoTempJ);
+        // printf("fvisc= %lf\n", fvisc);
          
         } else {
           fvisc = 0.;
         }
 
+        //printf("fvisc= %lf, wfd = %lf\n", fvisc, wfd);
         // total pair force & thermal energy increment
         fpair = -imass * jmass * (fi + fj + fvisc) * wfd;
         deltaE = -0.5 * fpair * delVdotDelR;
@@ -258,8 +330,6 @@ void PairSPHTaitwater::allocate() {
   memory->create(soundspeed, n + 1, "pair:soundspeed");
   memory->create(B, n + 1, "pair:B");
   memory->create(cut, n + 1, n + 1, "pair:cut");
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  // if(!atom->viscosity_flag)
   memory->create(viscosity, n + 1, n + 1, "pair:viscosity");
 }
 
@@ -290,10 +360,7 @@ void PairSPHTaitwater::coeff(int narg, char **arg) {
 
   double rho0_one = force->numeric(FLERR,arg[2]);
   double soundspeed_one = force->numeric(FLERR,arg[3]);
-  double viscosity_one=0.0;
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if(!atom->viscosity_flag)
-    viscosity_one = force->numeric(FLERR,arg[4]);
+  double viscosity_one = force->numeric(FLERR,arg[4]);
   double cut_one = force->numeric(FLERR,arg[5]);
   double B_one = soundspeed_one * soundspeed_one * rho0_one / 7.0;
 
@@ -303,17 +370,15 @@ void PairSPHTaitwater::coeff(int narg, char **arg) {
     soundspeed[i] = soundspeed_one;
     B[i] = B_one;
     for (int j = MAX(jlo,i); j <= jhi; j++) {
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      if(!atom->viscosity_flag)
-        viscosity[i][j] = viscosity_one;
+
+      viscosity[i][j] = viscosity_one;
       //printf("setting cut[%d][%d] = %f\n", i, j, cut_one);
       cut[i][j] = cut_one;
 
       setflag[i][j] = 1;
 
       //cut[j][i] = cut[i][j];
-      //if(!atom->viscosity_flag)
-      //  viscosity[j][i] = viscosity[i][j];
+      //viscosity[j][i] = viscosity[i][j];
       //setflag[j][i] = 1;
       count++;
     }
@@ -334,9 +399,7 @@ double PairSPHTaitwater::init_one(int i, int j) {
   }
 
   cut[j][i] = cut[i][j];
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
-  if(!atom->viscosity_flag) 
-    viscosity[j][i] = viscosity[i][j];
+  viscosity[j][i] = viscosity[i][j];
 
   return cut[i][j];
 }

@@ -855,6 +855,7 @@ int Input::execute_command()
   
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   else if (!strcmp(command,"viscosity")) set_viscosity();
+  else if (!strcmp(command,"taitHGcorrection")) tait_hg();
 
   else flag = 0;
 
@@ -2023,4 +2024,9 @@ void Input::units()
 void Input::set_viscosity()
 {
     atom->set_viscosity(narg, arg);
+}
+
+void Input::tait_hg()
+{
+    atom->tait_hg(narg, arg);
 }

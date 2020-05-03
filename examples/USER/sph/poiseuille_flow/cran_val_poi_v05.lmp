@@ -49,7 +49,7 @@ mass               3 ${m}
 
 variable           Twater equal 320
 variable           Twall equal 350
-variable	   Twall2 equal 295
+variable	   Twall2 equal 350
 
 variable 	   e_water equal ${Twater}*${Cv}*${m}
 variable  	   e_wall  equal ${Twall}*${Cv}*${m}

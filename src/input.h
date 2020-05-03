@@ -142,7 +142,9 @@ class Input : protected Pointers {
   void undump();
   void unfix();
   void units();
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
   void set_viscosity();
+  void tait_hg();
 };
 
 }
