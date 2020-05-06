@@ -3,21 +3,42 @@ atom_style         meso
 dimension          2
 newton             on
 boundary           f f p
-units              lj
-read_data          data-3.initial
+units              si
+#read_data          data-3.initial
 
 variable           h equal 0.03
 variable           c equal 10.0 # soundspeed for Tait's EOS
 variable           dt equal 0.1*${h}/${c} # upper limit of timestep based on CFL-like criterion
 variable           nrun equal 15.0/${dt} # roughly estimate number of timesteps needed for 7.5 seconds
+variable	   dx equal 0.00005
+
+region             box block 0.00e-03 6.00e-03 0.00e-03 6.00e-03 -1.0e-6 1.0e-6 units box
+create_box         3 box
+
+region		   bc block EDGE EDGE EDGE EDGE EDGE EDGE side out units box
+lattice 	   sq2 ${dx}
+create_atoms	   3 region bc
+
+region             water block 0.0e-03 1.00e-03 2.00e-03 4.00e-03 EDGE EDGE side in units box 
+lattice            sq2 ${dx}
+create_atoms       1 region water
+
+region             water2 block 5.0e-03 6.00e-03 2.00e-03 4.0e-03 EDGE EDGE side in units box 
+lattice            sq2 ${dx}
+create_atoms       2 region water2
+
 
 group              bc    type 3 # assign group name "bc" to boundary particles (type 3)
 group              water type 1 # assign group name "water" to water particles (type 1)
-#group              water2  type 2 # assign group name "water2" to water2 particles (type 2)
-group              water  type 2 # assign group name "water2" to water2 particles (type 2)
+group              water2  type 2 # assign group name "water2" to water2 particles (type 2)
+#group              water  type 2 # assign group name "water2" to water2 particles (type 2)
+
+mass		  1 0.2
+mass		  2 0.2
+mass		  3 0.1
 
 set                type 1 meso/e 1000
-set                type 2 meso/e 10000
+set                type 2 meso/e 1200
 set		   type 3 meso/e 41670
 
 
@@ -32,7 +53,7 @@ pair_coeff	   * * sph/heatconduction 1.47e-3 ${h}
 
 
 fix                gfix water gravity -9.81 vector 0 1 0 # add gravity. This fix also computes potential energy of mass in gravity field.
-#fix                gfix water2 gravity -9.81 vector 0 1 0
+fix                gfix water2 gravity -9.81 vector 0 1 0
 fix                2d_fix all enforce2d
 
 
@@ -53,11 +74,11 @@ fix                dtfix all dt/reset 1               NULL              ${dt}   
 
 # time-integrate position, velocities, internal energy and density of water particles
 fix                integrate_water_fix water meso
-#fix 	  	   integrate_water_fix water2 meso
+fix 	  	   integrate_water_fix water2 meso
 
 # time-integrate only internal energy and density of boundary particles
 fix                integrate_bc_fix bc meso/stationary
-dump               dump_id all custom 100 dump.lammpstrj id type xs ys zs mass c_rho_peratom c_e_peratom fx fy v_tempe v_tempera 
+dump               dump_id all custom 100 dumpCustomBoxes.lammpstrj id type xs ys zs mass c_rho_peratom c_e_peratom fx fy v_tempe v_tempera 
 dump_modify        dump_id first yes
 thermo             10
 thermo_style       custom step ke c_esph v_etot f_gfix press time f_dtfix
@@ -70,8 +91,8 @@ neighbor           ${skin} bin # set Verlet list skin distance
 # viscosity	   4P 1.856e-11 4209 0.04527 -3.376e-5
 viscosity 	   4PM 2  #multiple viscosities, specify 2 types
 viscosity	   type 1 1.856e-11 4209 0.04527 -3.376e-5
+viscosity	   type 2 7.856e-10 4209 0.04527 -3.376e-5
 #viscosity	   type 2 0.00201 1614 0.00618 -3.376e-5
-viscosity	   type 2 0.00201 1614 0.00618 -1.132e-5
 
 
 run                ${nrun}

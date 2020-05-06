@@ -14,7 +14,7 @@ variable           nrun equal 15.0/${dt} # roughly estimate number of timesteps 
 group              bc    type 2 # assign group name "bc" to boundary particles (type 2)
 group              water type 1 # assign group name "water" to water particles (type 1)
 
-set                type 1 meso/e 1000 
+set                type 1 meso/e 500 
 set		   type 2 meso/e 41670
 
 # use hybrid pairstyle which does density summation with cutoff ${h} every timestep (1)
@@ -48,7 +48,7 @@ fix                integrate_water_fix water meso
 
 # time-integrate only internal energy and density of boundary particles
 fix                integrate_bc_fix bc meso/stationary
-dump               dump_id all custom 100 dump.lammpstrj id type xs ys zs mass c_rho_peratom c_e_peratom fx fy v_tempe v_tempera 
+dump               dump_id all custom 100 dumpeNeg12.lammpstrj id type xs ys zs mass c_rho_peratom c_e_peratom fx fy v_tempe v_tempera 
 dump_modify        dump_id first yes
 thermo             10
 thermo_style       custom step ke c_esph v_etot f_gfix press time f_dtfix
@@ -58,7 +58,7 @@ thermo_modify	   lost ignore flush yes
 neigh_modify       every 5 delay 0 check no
 variable           skin equal 0.3*${h}
 neighbor           ${skin} bin # set Verlet list skin distance
-viscosity	   4P 1.856e-11 4209 0.04527 -3.376e-5
+viscosity	   4P 1.856e-12 4209 0.04527 -3.376e-5
 #viscosity	   4P 0.00201 1614 0.00618 -1.132e-5
 
 run                ${nrun}

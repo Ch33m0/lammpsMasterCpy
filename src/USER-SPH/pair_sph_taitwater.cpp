@@ -139,8 +139,12 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
       }
       if (flag){
         //check to see if rho value needs H-G correction for this boundary particle
-        if(rho[i]<rho0[itype])
+        if(rho[i]<rho0[itype]){
           rhoTempI=rho0[itype]; 
+          //printf("happening for i, rho[i]= %lf, rho0[itype]= %lf, for itype= %d\n", rho[i], rho0[itype], itype);
+          }
+        else
+          rhoTempI=rho[i];
       }
       //otherwise, set it to standard value of rho
       else
@@ -195,6 +199,9 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
           if (flag){
             if(rho[j]<rho0[jtype])
               rhoTempJ=rho0[jtype]; 
+            else 
+              rhoTempJ=rho[j];
+             // printf("happening for j, rho[j]= %lf, rho0[jtype]= %lf, for jtype= %d\n", rho[j], rho0[jtype], jtype);              }
           }
           else
             rhoTempJ= rho[j];
@@ -270,9 +277,10 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
          //else, stock visocisty used
          else{
            alpha=viscosity[itype][jtype];
+           //printf("alpha= %lf\n", alpha);
          }  
-         //fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rho[i] + rho[j]);
-         fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rhoTempI + rhoTempJ);
+         fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rho[i] + rho[j]);
+         //fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rhoTempI + rhoTempJ);
         // printf("fvisc= %lf\n", fvisc);
          
         } else {

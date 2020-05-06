@@ -8,7 +8,7 @@ variable	res	equal 	100
 variable	H	equal 	0.005
 variable	dx	equal	${H}/${res}
 variable	hh	equal	1.5*${dx}
-variable    	c	equal 	2.0 
+variable    	c	equal 	2.0
 variable        dt 	equal 	0.05*${hh}/${c}
 variable	den	equal	1000.0
 variable	vis	equal	1.000
@@ -63,8 +63,8 @@ set		   group all meso/cv ${cv_input}
 set                group all meso/rho ${den}
 
 
-pair_style         hybrid/overlay sph/taitwater sph/heatconduction
-pair_coeff         * * sph/taitwater ${den} ${c} ${vis} ${hh}
+pair_style         hybrid/overlay sph/taitwater/morris sph/heatconduction
+pair_coeff         * * sph/taitwater/morris ${den} ${c} ${vis} ${hh}
 pair_coeff         * * sph/heatconduction ${dd} ${hh}
 
 fix                gfix water gravity ${fb} vector 1 0 0
@@ -87,17 +87,18 @@ fix                int_bc_b 	bc_bottom meso/fullstationary #### Full stationary 
 
 
 
-dump               dump_id all custom 100000 wallsSameFinal.lammpstrj id type xs ys zs vx vy mass c_rho_peratom c_ie_peratom v_T
+dump               dump_id all custom 100000 outputMorrisSameWalls.lammpstrj id type xs ys zs vx vy mass c_rho_peratom c_ie_peratom v_T
 dump_modify        dump_id first yes
 thermo             10000
 thermo_style       custom step ke c_esph v_etot f_gfix press time f_dtfix
 thermo_modify      norm no
+thermo_modify	   lost ignore flush yes
 
 neigh_modify       every 1 delay 0 check no
 variable           skin equal 0.03*${hh}
 neighbor           ${skin} bin 
-#viscosity          Arrhenius 0.00183 1879.9
-viscosity          Arrhenius 0.000183 1879.9
+viscosity          Arrhenius 0.00183 1879.9
+#viscosity          Arrhenius 0.000183 1879.9
 #viscosity          Arrhenius 0.0009 1879.9
 #viscosity          Arrhenius 0.0000000915 1879.9
 run                10000000

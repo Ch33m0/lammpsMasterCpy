@@ -1,171 +1,48 @@
+
+The following have been reloaded with a version change:
+  1) GCCcore/6.4.0 => GCCcore/8.2.0
+  2) binutils/2.28-GCCcore-6.4.0 => binutils/2.31.1-GCCcore-8.2.0
+
 LAMMPS (7 Aug 2019)
-atom_style         meso
-dimension          2
-newton             on
-boundary           p f p
-units              si
-
-variable	res	equal 	100
-variable	H	equal 	0.005
-variable	dx	equal	${H}/${res}
-variable	dx	equal	0.005/${res}
-variable	dx	equal	0.005/100
-variable	hh	equal	1.5*${dx}
-variable	hh	equal	1.5*5e-05
-variable    	c	equal 	2.0
-variable        dt 	equal 	0.05*${hh}/${c}
-variable        dt 	equal 	0.05*7.5e-05/${c}
-variable        dt 	equal 	0.05*7.5e-05/2
-variable	den	equal	1000.0
-variable	vis	equal	1.000
-variable	fb	equal	0.21235955
-variable	dd	equal	0.00000001
-variable        Cv      equal   4200
-variable        Np      equal   5160
-variable        Area    equal   (6.00e-03)*(0.045e-03+1.05e-03)
-variable        m       equal   ${den}*${Area}/${Np}
-variable        m       equal   1000*${Area}/${Np}
-variable        m       equal   1000*6.57e-06/${Np}
-variable        m       equal   1000*6.57e-06/5160
-
-print m=${m}
-print m=1.27325581395349e-06
 m=1.27325581395349e-06
-
-
-region             box block 0.00e-03 6.00e-03 -0.045e-03 1.05e-03 -1.0e-6 1.0e-6 units box
-create_box         3 box
 Created orthogonal box = (0 -4.5e-05 -1e-06) to (0.006 0.00105 1e-06)
   8 by 2 by 1 MPI processor grid
-
-region             water block 0.0e-03 6.00e-03 0.001e-03 0.999e-03 EDGE EDGE side in units box
-lattice            sq2 ${dx}
-lattice            sq2 5e-05
 Lattice spacing in x,y,z = 5e-05 5e-05 5e-05
-create_atoms       1 region water
 Created 4680 atoms
   create_atoms CPU = 0.000859386 secs
-
-region             bc_bottom block EDGE EDGE +0.001e-03 EDGE EDGE EDGE side out units box
-lattice            sq2 ${dx}
-lattice            sq2 5e-05
 Lattice spacing in x,y,z = 5e-05 5e-05 5e-05
-create_atoms       2 region bc_bottom
 Created 240 atoms
   create_atoms CPU = 0.00021384 secs
-
-region             bc_top block EDGE EDGE EDGE 0.999e-03 EDGE EDGE side out units box
-lattice            sq2 ${dx}
-lattice            sq2 5e-05
 Lattice spacing in x,y,z = 5e-05 5e-05 5e-05
-create_atoms       3 region bc_top
 Created 240 atoms
   create_atoms CPU = 0.000223598 secs
-
-
-group              water        type 1
 4680 atoms in group water
-group              bc_bottom    type 2
 240 atoms in group bc_bottom
-group              bc_top    	type 3
 240 atoms in group bc_top
-
-
-mass               1 ${m}
-mass               1 1.27325581395349e-06
-mass               2 ${m}
-mass               2 1.27325581395349e-06
-mass               3 ${m}
-mass               3 1.27325581395349e-06
-
-variable           Twater equal 320
-variable           Twall equal 350
-variable	   Twall2 equal 350
-
-variable 	   e_water equal ${Twater}*${Cv}*${m}
-variable 	   e_water equal 320*${Cv}*${m}
-variable 	   e_water equal 320*4200*${m}
-variable 	   e_water equal 320*4200*1.27325581395349e-06
-variable  	   e_wall  equal ${Twall}*${Cv}*${m}
-variable  	   e_wall  equal 350*${Cv}*${m}
-variable  	   e_wall  equal 350*4200*${m}
-variable  	   e_wall  equal 350*4200*1.27325581395349e-06
-variable  	   e_wall2  equal ${Twall2}*${Cv}*${m}
-variable  	   e_wall2  equal 350*${Cv}*${m}
-variable  	   e_wall2  equal 350*4200*${m}
-variable  	   e_wall2  equal 350*4200*1.27325581395349e-06
-variable	   cv_input equal ${Cv}*${m}
-variable	   cv_input equal 4200*${m}
-variable	   cv_input equal 4200*1.27325581395349e-06
-
-set 		   group water meso/e ${e_water}
-set 		   group water meso/e 1.71125581395349
+Setting atom values ...
   4680 settings made for meso/e
-set 		   group bc_top meso/e ${e_wall}
-set 		   group bc_top meso/e 1.87168604651163
+Setting atom values ...
   240 settings made for meso/e
-set 		   group bc_bottom meso/e ${e_wall2}
-set 		   group bc_bottom meso/e 1.87168604651163
+Setting atom values ...
   240 settings made for meso/e
-set		   group all meso/cv ${cv_input}
-set		   group all meso/cv 0.00534767441860466
+Setting atom values ...
   5160 settings made for meso/cv
-set                group all meso/rho ${den}
-set                group all meso/rho 1000
+Setting atom values ...
   5160 settings made for meso/rho
-
-
-pair_style         hybrid/overlay sph/taitwater sph/heatconduction
-pair_coeff         * * sph/taitwater ${den} ${c} ${vis} ${hh}
-pair_coeff         * * sph/taitwater 1000 ${c} ${vis} ${hh}
-pair_coeff         * * sph/taitwater 1000 2 ${vis} ${hh}
-pair_coeff         * * sph/taitwater 1000 2 1 ${hh}
-pair_coeff         * * sph/taitwater 1000 2 1 7.5e-05
-pair_coeff         * * sph/heatconduction ${dd} ${hh}
-pair_coeff         * * sph/heatconduction 1e-08 ${hh}
-pair_coeff         * * sph/heatconduction 1e-08 7.5e-05
-
-fix                gfix water gravity ${fb} vector 1 0 0
-fix                gfix water gravity 0.21235955 vector 1 0 0
-fix                2d_fix all enforce2d
-
-compute            rho_peratom all meso/rho/atom
-compute            ie_peratom all meso/e/atom
-
-variable           T atom  (${Twater}+c_ie_peratom/(${m}*${Cv}))
-variable           T atom  (320+c_ie_peratom/(${m}*${Cv}))
-variable           T atom  (320+c_ie_peratom/(1.27325581395349e-06*${Cv}))
-variable           T atom  (320+c_ie_peratom/(1.27325581395349e-06*4200))
-
-compute            esph all reduce sum c_ie_peratom
-compute            ke all ke
-variable           etot equal c_esph+c_ke+f_gfix
-
-
-fix                dtfix	all 	dt/reset 1	NULL	${dt}	0.0005 units box
-fix                dtfix	all 	dt/reset 1	NULL	1.875e-06	0.0005 units box
-fix                int_water 	water meso
-fix                int_bc_t 	bc_top meso/fullstationary               #### Full stationary is a new fix to have constant position speed density and internal energy
-fix                int_bc_b 	bc_bottom meso/fullstationary #### Full stationary is a new fix to have constant position speed density and internal energy
-
-
-
-dump               dump_id all custom 100000 wallsSameFinal.lammpstrj id type xs ys zs vx vy mass c_rho_peratom c_ie_peratom v_T
-dump_modify        dump_id first yes
-thermo             10000
-thermo_style       custom step ke c_esph v_etot f_gfix press time f_dtfix
-thermo_modify      norm no
-
-neigh_modify       every 1 delay 0 check no
-variable           skin equal 0.03*${hh}
-variable           skin equal 0.03*7.5e-05
-neighbor           ${skin} bin
-neighbor           2.25e-06 bin
-#viscosity          Arrhenius 0.00183 1879.9
-viscosity          Arrhenius 0.000183 1879.9
-#viscosity          Arrhenius 0.0009 1879.9
-#viscosity          Arrhenius 0.0000000915 1879.9
-run                10000000
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
 Neighbor list info ...
   update every 1 steps, delay 0 steps, check no
   max neighbors/atom: 2000, page size: 100000
@@ -183,6 +60,12 @@ Neighbor list info ...
       pair build: copy
       stencil: none
       bin: none
+Arrhenius viscosity chosen
+Arrhenius viscosity chosen
+Setting up Verlet run ...
+  Unit style    : si
+  Current step  : 0
+  Time step     : 1e-08
 Per MPI rank memory allocation (min/avg/max) = 5.336 | 5.336 | 5.336 Mbytes
 Step KinEng c_esph v_etot f_gfix Press Time f_dtfix 
        0            0    8907.0865    8907.0865 -3.7808358e-06            0            0            0 

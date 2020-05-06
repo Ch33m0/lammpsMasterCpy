@@ -24,7 +24,7 @@
 ##	48 CPUs: select=3:ncpus=16:mpiprocs=16
 ##	..etc..
 ##
-#PBS -l select=2:ncpus=16:mpiprocs=16
+#PBS -l select=1:ncpus=16:mpiprocs=16
 ##
 ## STEP 3:
 ##
