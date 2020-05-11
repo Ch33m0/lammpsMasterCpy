@@ -11,7 +11,6 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
-// CALLUM: added code at lines 859 and 2019, to check for if viscosity is in the input file, then calles a method to set velocity paramters
 
 #include "input.h"
 #include <mpi.h>
@@ -852,10 +851,10 @@ int Input::execute_command()
   else if (!strcmp(command,"undump")) undump();
   else if (!strcmp(command,"unfix")) unfix();
   else if (!strcmp(command,"units")) units();
-  
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   else if (!strcmp(command,"viscosity")) set_viscosity();
   else if (!strcmp(command,"taitHGcorrection")) tait_hg();
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   else flag = 0;
 
@@ -2030,3 +2029,4 @@ void Input::tait_hg()
 {
     atom->tait_hg(narg, arg);
 }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

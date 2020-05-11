@@ -11,7 +11,7 @@
    See the README file in the top-level LAMMPS directory.
 ------------------------------------------------------------------------- */
 
-// CALLUM: added include for viscosity class header, at very end of document added the method that reads the arguments from input
+// Notes: added include for viscosity class header, at very end of document added the method that reads the arguments from input
 //         file and determines what kind of viscosity will be used, and then accepts the parameters for this kind and instantiates it.
 
 #include "atom.h"
@@ -39,10 +39,10 @@
 #include "error.h"
 #include "utils.h"
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#include "4Pviscosity.h"  //is this necessary for compilation... dont understand that tbh
+#include "4Pviscosity.h"  
 #include "4PviscosityM.h"
 #include "arrviscosity.h"
-
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 #ifdef LMP_USER_INTEL
 #include "neigh_request.h"
 #endif
@@ -99,7 +99,7 @@ Atom::Atom(LAMMPS *lmp) : Pointers(lmp)
 
   rho = drho = e = de = cv = NULL;
   vest = NULL;
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // initalize viscosity to NULL in order to check it, set a flag
   viscosity = NULL;
   viscosity_flag=0;
@@ -107,6 +107,7 @@ Atom::Atom(LAMMPS *lmp) : Pointers(lmp)
 // set boundaryHG particle array to NULL
   boundaryHG= NULL;
   boundaryCount=0;
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
 
   // SPIN package
 
@@ -314,6 +315,7 @@ Atom::~Atom()
   //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // destroy viscosity object
   memory->destroy(viscosity);
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   memory->destroy(contact_radius);
   memory->destroy(smd_data_9);
@@ -2440,3 +2442,4 @@ void Atom::tait_hg(int narg, char **arg){
     printf("set for Tait Hughes-Graham correction\n");
 
 }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

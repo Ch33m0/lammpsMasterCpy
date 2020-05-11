@@ -1,10 +1,10 @@
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//NOTES: created class that inherits Viscosity....
 // ALL FLUID PARTICLES MUST BE FROM 1 to n-1 TYPE.... nth TYPE IS THE BOUNDARY PARTICLES AND IS NOT COUNTED
 
 #include "4PviscosityM.h"
 
 using namespace LAMMPS_NS;
+
 
 Viscosity4PM::Viscosity4PM(int types) {
     this->types=types;
@@ -29,3 +29,4 @@ double Viscosity4PM::computeViscosity(int type, double temp) {
   else
     return 0.0;
 } 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

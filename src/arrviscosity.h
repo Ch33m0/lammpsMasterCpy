@@ -8,6 +8,8 @@
 
 namespace LAMMPS_NS{
 
+//class that stores parameters and computes Arrhenius-stype temperature-dependent dynamic viscosity for single fluid type
+
 class ViscosityArr  : public Viscosity {
 
 public:
@@ -24,3 +26,4 @@ private:
 }
 
 #endif //LAMMPS_ARRVISCOSITY_H
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111

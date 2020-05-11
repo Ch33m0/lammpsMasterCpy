@@ -42,8 +42,9 @@ PairSPHIsothermal::~PairSPHIsothermal() {
     memory->destroy(cut);
     memory->destroy(rho0);
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //destroy memory for reference pressure 
     memory->destroy(p0);
-    
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     memory->destroy(soundspeed);
   }
 }
@@ -66,7 +67,6 @@ void PairSPHIsothermal::compute(int eflag, int vflag) {
   double *rho = atom->rho;
   double *mass = atom->mass;
   double *de = atom->de;
-  double *cv = atom->cv;
   double *drho = atom->drho;
   int *type = atom->type;
   int nlocal = atom->nlocal;
@@ -116,7 +116,8 @@ void PairSPHIsothermal::compute(int eflag, int vflag) {
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // compute pressure of atom i with Isothermal EOS
     fi = p0[itype] + soundspeed[itype]*soundspeed[itype]*(rho0[itype] - rho[i]);
-    printf("fi= %lf, and p0[itype]= %lf, soundspeed[itype]= %lf, rho0[itype]= %lf, rho[i]= %lf\n", fi, p0[itype], soundspeed[itype], rho0[itype], rho[i]);
+   // printf("fi= %lf, and p0[itype]= %lf, soundspeed[itype]= %lf, rho0[itype]= %lf, rho[i]= %lf\n", fi, p0[itype], soundspeed[itype], rho0[itype], rho[i]);
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     for (jj = 0; jj < jnum; jj++) {
       j = jlist[jj];
@@ -152,8 +153,8 @@ void PairSPHIsothermal::compute(int eflag, int vflag) {
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // compute pressure  of atom j with Isothermal EOS
         fj = p0[jtype] + soundspeed[jtype]*soundspeed[jtype]*(rho0[jtype] - rho[j]);
-        
-        printf("fj= %lf, and p0[jtype]= %lf, soundspeed[jtype]= %lf, rho0[jtype]= %lf, rho[j]= %lf\n", fj, p0[jtype], soundspeed[jtype], rho0[jtype], rho[j]);
+        //printf("fj= %lf, and p0[jtype]= %lf, soundspeed[jtype]= %lf, rho0[jtype]= %lf, rho[j]= %lf\n", fj, p0[jtype], soundspeed[jtype], rho0[jtype], rho[j]);
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // dot product of velocity delta and distance vector
         delVdotDelR = delx * (vxtmp - v[j][0]) + dely * (vytmp - v[j][1])

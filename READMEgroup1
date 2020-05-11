@@ -1,0 +1,38 @@
+README:
+
+Modifications made:
+
+1) Users can now specify custom, temperature dependent visocisties to be used in pair_sph_taitwater and pair_sph_taitwater_morris simulations. Currently supports : 4 parameter exponenetial, Arrhenius. 
+
+Enter command "viscosity" in input file to use this feature. Accepted next commands: "4P", "4PM", "Arrhenius". 
+
+If "4P" chosen, the next 4 inputs need be the 4 parameters for the viscosity equation, separated by spaces. 
+
+ex) "viscosity	4P 	param1 param2 param3 param4"
+
+If "4PM" chosen, the next accepted command is a single integer defining the number of fluids to be specified. Next, another line beginning with the command "viscosity",  followed by "type", followed by the particle type number, followed by the 4 parameters for the equation is needed, one such line for each particle type. 
+
+ex) "viscosity	4PM	2
+     viscosity	type 	1	param1.1 param1.2 param1.3 param1.4
+     viscosity	type 	2	param2.1 param2.2 param2.3 param2.4"
+      
+If "Arrhenius" is chosen, the next 2 inputs need to be the values of C1 and C2 for the Arrhenius equation.
+
+ex) "viscosity	Arrhenius	C1val C2val"
+
+
+2) Users can now also use the Hughes-Graham correction for the Tait EOS in pair_sph_taitwater simulations. This is done by specifying a new input command, "taitHGcorrection", followed by the particle types (multiple allowed) that will be considered as boundary type.
+
+ex) "taitHGcorrection	type1 type2"
+
+
+3) Users can now also use a new EOS for fluid flows called pair_sph_isothermal. This is invoked as a normal pair_style, with the pair_coeff accepting 7 arguments listed below.
+
+ex) "pair_style	sph/isothermal
+     pair_coeff	* * rh0 c0 viscosity h p0"
+     
+rho0 is reference density, c0 is the speed of sound in the simulation, h is the SPH cutting parameter, p0 is reference pressure used in the Isothermal EOS. 
+
+
+Please find an assortment of new input files found in /examples/USER/sph/water_collpase and /examples/USER/sph/poiseuille_flow that demonstrate these new capabilities of the software. 
+

@@ -142,9 +142,12 @@ class Input : protected Pointers {
   void undump();
   void unfix();
   void units();
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //method called when the "viscosity" command is entered in the input file, calls the corresponding Atom class method to read and process inputs
   void set_viscosity();
+  //method called when the "taitHGcorrection" command is entered in the input file, calls the corresponding Atom class method to read and process inputs
   void tait_hg();
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 };
 
 }

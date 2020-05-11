@@ -85,7 +85,7 @@ module load Eigen/3.3.3-foss-2018a
 ## 
 ##cp ${HOME}/LAMMPS/lammps-7Aug19/src .
 
-mpirun -machinefile $PBS_NODEFILE -np ${cpus} ${HOME}/LAMMPS/lammps-7Aug19/src/lmp_mpi -in water_collapseHG.lmp
+mpirun -machinefile $PBS_NODEFILE -np ${cpus} ${HOME}/LAMMPS/lammps-7Aug19/src/lmp_mpi -in water_collapseVisc.lmp
 
 ##mpirun -machinefile $PBS_NODEFILE -np ${cpus} ./lmp_mpi -in water_collapseVisc.lmp
 

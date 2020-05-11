@@ -16,4 +16,5 @@ ViscosityArr::ViscosityArr(double C1, double C2) {
 double ViscosityArr::computeViscosity(int type, double temp) {
     if (type==this->types)
         return  C1*exp(C2/temp);
-} 
+}
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 

@@ -64,15 +64,13 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
   double *rho = atom->rho;
   double *mass = atom->mass;
   double *de = atom->de;
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //adding energy of atom and heat capacity into computation
-  double *e = atom->e;
-  double *cv = atom->cv;
   double *drho = atom->drho;
   int *type = atom->type;
   int nlocal = atom->nlocal;
   int newton_pair = force->newton_pair;
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  double *e = atom->e;
+  double *cv = atom->cv;
   Viscosity * viscosityCust;
   if(atom->viscosity_flag)
     viscosityCust = atom->viscosity;
@@ -81,6 +79,7 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
   int temperature_switch= atom->temperature_switch;
   int * boundaryHG = atom->boundaryHG;
   int boundaryCount= atom->boundaryCount;
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   // check consistency of pair coefficients
 
@@ -121,7 +120,7 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
     jnum = numneigh[i];
 
     imass = mass[itype];
-
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // compute pressure of atom i with Tait EOS
     int caseVal;
     double rhoTempI, rhoTempJ;
@@ -153,6 +152,7 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
     tmp = rhoTempI / rho0[itype];
     fi = tmp * tmp * tmp;
     fi = B[itype] * (fi * fi * tmp - 1.0) / (rhoTempI * rhoTempI);
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     for (jj = 0; jj < jnum; jj++) {
@@ -186,6 +186,7 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
           wfd = -19.098593171027440292e0 * wfd * wfd * ihsq * ihsq * ihsq;
         }
 
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // compute pressure  of atom j with Tait EOS
         if (boundaryHG == NULL)
           rhoTempJ=rho[j];
@@ -209,6 +210,7 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
         tmp = rhoTempJ / rho0[jtype];
         fj = tmp * tmp * tmp;
         fj = B[jtype] * (fj * fj * tmp - 1.0) / (rhoTempJ * rhoTempJ);
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         //printf("fj= %lf, and fi= %lf\n", fj, fi);
 
@@ -220,7 +222,7 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
         if (delVdotDelR < 0.) {
         
           mu = h * delVdotDelR / (rsq + 0.01 * h * h);
-          //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
           //if temp-dependent visc is being used
           if(viscosity_flag){
             double T;
@@ -280,8 +282,7 @@ void PairSPHTaitwater::compute(int eflag, int vflag) {
            //printf("alpha= %lf\n", alpha);
          }  
          fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rho[i] + rho[j]);
-         //fvisc = -alpha * (soundspeed[itype] + soundspeed[jtype]) * mu / (rhoTempI + rhoTempJ);
-        // printf("fvisc= %lf\n", fvisc);
+         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          
         } else {
           fvisc = 0.;

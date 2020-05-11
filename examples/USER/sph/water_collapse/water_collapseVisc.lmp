@@ -30,6 +30,11 @@ fix                2d_fix all enforce2d
 
 variable   tempe 	atom  ((c_e_peratom-1000)/(0.2*4117)+300)
 variable   tempera	atom  ((c_e_peratom-500)/(0.1*4117)+300)
+variable 	C1 equal 1.856e-11
+variable	C2 equal 4209
+variable	C3 equal 0.04527
+variable	C4 equal -3.376e-5
+variable    	mu   atom v_C1*exp(v_C2/v_tempera+v_C3*v_tempera+v_C4*(v_tempera)^2)
 
 compute            rho_peratom all meso/rho/atom
 compute            e_peratom all meso/e/atom
@@ -48,7 +53,7 @@ fix                integrate_water_fix water meso
 
 # time-integrate only internal energy and density of boundary particles
 fix                integrate_bc_fix bc meso/stationary
-dump               dump_id all custom 100 dumpeNeg12.lammpstrj id type xs ys zs mass c_rho_peratom c_e_peratom fx fy v_tempe v_tempera 
+dump               dump_id all custom 100 dumpeNeg11Mu.lammpstrj id type xs ys zs mass c_rho_peratom c_e_peratom fx fy v_tempe v_tempera v_mu 
 dump_modify        dump_id first yes
 thermo             10
 thermo_style       custom step ke c_esph v_etot f_gfix press time f_dtfix
@@ -58,7 +63,7 @@ thermo_modify	   lost ignore flush yes
 neigh_modify       every 5 delay 0 check no
 variable           skin equal 0.3*${h}
 neighbor           ${skin} bin # set Verlet list skin distance
-viscosity	   4P 1.856e-12 4209 0.04527 -3.376e-5
+viscosity	   4P 1.856e-11 4209 0.04527 -3.376e-5
 #viscosity	   4P 0.00201 1614 0.00618 -1.132e-5
 
 run                ${nrun}

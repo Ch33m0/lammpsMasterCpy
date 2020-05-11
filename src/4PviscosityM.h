@@ -8,6 +8,8 @@
 
 namespace LAMMPS_NS{
 
+//class that stores parameters and computes 4-parameter temperature-dependent dynamic viscosity for multiple fluids, indexed by particle type-1
+
 class Viscosity4PM  : public Viscosity {
 
 public:
@@ -25,3 +27,4 @@ private:
 }
 
 #endif //LAMMPS_4PVISCOSITY_H
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

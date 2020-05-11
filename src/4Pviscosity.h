@@ -8,6 +8,8 @@
 
 namespace LAMMPS_NS{
 
+//class used to store the parameters and to compute 4-parameter exponential temperature-dependent dynamic viscosity
+
 class Viscosity4P  : public Viscosity {
 
 public:
@@ -24,3 +26,4 @@ private:
 }
 
 #endif //LAMMPS_4PVISCOSITY_H
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

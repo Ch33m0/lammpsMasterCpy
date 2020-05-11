@@ -20,7 +20,8 @@
 #include <map>
 #include <string>
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#include "viscosity.h" //here only or in atom.cpp?? dunno, have to test both
+#include "viscosity.h" 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 namespace LAMMPS_NS {
 
@@ -159,15 +160,17 @@ class Atom : protected Pointers {
   int cs_flag,csforce_flag,vforce_flag,ervelforce_flag,etag_flag;
   int rho_flag,e_flag,cv_flag,vest_flag;
   int dpd_flag,edpd_flag,tdpd_flag;
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// adding flags for execution 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//flag to notify if custom viscosity has been chosen
   int viscosity_flag;
+//switch to indicate which style of temperature calculation will be used in code
   int temperature_switch;
   
-//which particles are boundary particles? for Hughes-Graham correction
+//stores types of specified boundary particles for Hughes-Graham correction
   int * boundaryHG;
-// how many boundary particles are there?
+// stores number of specified boundary particles for Hughes-Graham correction
   int boundaryCount;
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   //USER-SPIN package
 
@@ -305,10 +308,12 @@ class Atom : protected Pointers {
   bigint memory_usage();
   int memcheck(const char *);
   
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//method that reads input arguments from input file, will select the appropriate viscosity type and set proper flags/instantiate the proper Viscosity inherited class
   void set_viscosity(int narg, char **arg);
+//method that is used to read input file command to set Tait Hughes Graham correction, set the appropriate flag, and instantiate an array of the particles type
   void tait_hg(int narg, char **arg);
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   // functions for global to local ID mapping
   // map lookup function inlined for efficiency
@@ -322,8 +327,9 @@ class Atom : protected Pointers {
   
   
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//added Viscosity class memeber pointer
   Viscosity *viscosity;
-
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   void map_init(int check = 1);
   void map_clear();

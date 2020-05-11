@@ -47,9 +47,9 @@ mass               1 ${m}
 mass               2 ${m}
 mass               3 ${m}
 
-variable           Twater equal 320
-variable           Twall equal 350
-variable	   Twall2 equal 350
+variable           Twater equal 295
+variable           Twall equal 295
+variable	   Twall2 equal 295
 
 variable 	   e_water equal ${Twater}*${Cv}*${m}
 variable  	   e_wall  equal ${Twall}*${Cv}*${m}
@@ -73,7 +73,10 @@ fix                2d_fix all enforce2d
 compute            rho_peratom all meso/rho/atom
 compute            ie_peratom all meso/e/atom
 
-variable           T atom  (${Twater}+c_ie_peratom/(${m}*${Cv}))
+variable           T atom  (${Twater}+c_ie_peratom/(${m}*${Cv}))-295
+#variable	   C1 equal 0.000183
+#variable  	   C2 equal 1879.9
+variable	   mu atom 0.000183*exp(1879.9/v_T)
 
 compute            esph all reduce sum c_ie_peratom
 compute            ke all ke
@@ -87,7 +90,7 @@ fix                int_bc_b 	bc_bottom meso/fullstationary #### Full stationary 
 
 
 
-dump               dump_id all custom 100000 wallsSameFinal.lammpstrj id type xs ys zs vx vy mass c_rho_peratom c_ie_peratom v_T
+dump               dump_id all custom 100000 wallsDelta0MuOutput2.lammpstrj id type xs ys zs vx vy mass c_rho_peratom c_ie_peratom v_T v_mu
 dump_modify        dump_id first yes
 thermo             10000
 thermo_style       custom step ke c_esph v_etot f_gfix press time f_dtfix

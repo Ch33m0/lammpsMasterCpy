@@ -63,22 +63,21 @@ void PairSPHTaitwaterMorris::compute(int eflag, int vflag) {
   double **x = atom->x;
   double **f = atom->f;
   double *rho = atom->rho;
-  double *mass = atom->mass;
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  double *e = atom->e;
-  double *cv = atom->cv;
-  
+  double *mass = atom->mass; 
   double *de = atom->de;
   double *drho = atom->drho;
   int *type = atom->type;
   int nlocal = atom->nlocal;
   int newton_pair = force->newton_pair;
-  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  double *e = atom->e;
+  double *cv = atom->cv;
   Viscosity * viscosityCust;
   if(atom->viscosity_flag)
     viscosityCust = atom->viscosity;
   
   int viscosity_flag= atom->viscosity_flag;
+  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   // check consistency of pair coefficients
 
@@ -169,6 +168,8 @@ void PairSPHTaitwaterMorris::compute(int eflag, int vflag) {
 
         // Morris Viscosity (Morris, 1996)
         
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //check to see if custom viscosity was chosen, if so then use it
         double dynamicViscI, dynamicViscJ;
         
         if(viscosity_flag){
@@ -202,6 +203,8 @@ void PairSPHTaitwaterMorris::compute(int eflag, int vflag) {
         }
 
         fvisc = (dynamicViscJ + dynamicViscI) / (rho[i] * rho[j]);
+        
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         fvisc *= imass * jmass * wfd;
 

@@ -1,4 +1,4 @@
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //NOTES: created class that inherits Viscosity, uses 4 parameters
 
 #include "4Pviscosity.h"
@@ -19,3 +19,4 @@ double Viscosity4P::computeViscosity(int type, double temp) {
         return  p1*exp(p2/temp + p3*temp + p4*temp*temp);
 } 
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
